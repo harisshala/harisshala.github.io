@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Llogaritësi i Determinantit</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 50px;
+      background: linear-gradient(135deg, #1f3c88, #5eb8ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
+    }
+    .container {
+      background: rgba(0,0,0,0.6);
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+      color: #ffdd59;
+    }
+    select, input, button {
+      font-size: 18px;
+      margin: 8px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    input {
+      width: 80px;
+      text-align: center;
+    }
+    button {
+      background: #ffdd59;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    #matrix { margin-top: 20px; }
+    #result { margin-top: 25px; font-size: 28px; font-weight: bold; color: #00ff99; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Llogaritësi i Determinantit</h1>
+
+    <label>Madhësia e matricës: </label>
+    <select id="size">
+      <option value="2">2×2</option>
+      <option value="3">3×3</option>
+      <option value="4" selected>4×4</option>
+    </select>
+    <button onclick="createMatrix()">Krijo Matricën</button>
+    <button onclick="fillSample()">Vendos Shembull</button>
+
+    <div id="matrix"></div>
+
+    <button onclick="computeDet()">Llogarit Determinantin</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function createMatrix() {
+      const size = parseInt(document.getElementById('size').value);
+      const matrixDiv = document.getElementById('matrix');
+      matrixDiv.innerHTML = '';
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          const input = document.createElement('input');
+          input.id = `cell-${r}-${c}`;
+          matrixDiv.appendChild(input);
+        }
+        matrixDiv.appendChild(document.createElement('br'));
+      }
+    }
+
+    function fillSample() {
+      const sample = [
+        [2,1,4,0],
+        [2,3,2,1],
+        [0,0,1,0],
+        [4,2,1,0]
+      ];
+      document.getElementById('size').value = 4;
+      createMatrix();
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          document.getElementById(`cell-${r}-${c}`).value = sample[r][c];
+        }
+      }
+    }
+
+    function computeDet() {
+      const size = parseInt(document.getElementById('size').value);
+      const matrix = [];
+      for (let r = 0; r < size; r++) {
+        const row = [];
+        for (let c = 0; c < size; c++) {
+          const val = parseFloat(document.getElementById(`cell-${r}-${c}`).value);
+          row.push(isNaN(val) ? 0 : val);
+        }
+        matrix.push(row);
+      }
+      const det = determinant(matrix);
+      document.getElementById('result').innerText = 'Determinanti: ' + det;
+    }
+
+    function determinant(m) {
+      const n = m.length;
+      if (n === 1) return m[0][0];
+      if (n === 2) return m[0][0]*m[1][1] - m[0][1]*m[1][0];
+      let det = 0;
+      for (let c = 0; c < n; c++) {
+        det += ((c % 2 === 0 ? 1 : -1) * m[0][c] * determinant(minor(m,0,c)));
+      }
+      return det;
+    }
+
+    function minor(m,row,col) {
+      return m.filter((_,r)=>r!==row).map(r=>r.filter((_,c)=>c!==col));
+    }
+
+    createMatrix();
+  </script>
+</body>
+</html>
